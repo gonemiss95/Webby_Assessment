@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using UserManagement.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -53,6 +55,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 builder.Services.AddAuthorization();
 
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom
+        .Configuration(context.Configuration)
+        .WriteTo.Console()
+        .WriteTo.File(
+            path: Path.Combine(AppContext.BaseDirectory, "Logs", ".log"),
+            rollingInterval: RollingInterval.Day
+        );
+});
+
 
 #region Add Scoped for Services
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -67,6 +81,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
