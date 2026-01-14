@@ -18,27 +18,17 @@ namespace UserManagement.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody]LoginViewModel loginVM)
+        public async Task<IActionResult> Login([FromBody] LoginViewModel loginVM)
         {
-            try
+            if (loginVM.Username != "admin" && loginVM.Password != "admin123")
             {
-                if (loginVM.Username != "admin" && loginVM.Password != "admin123")
-                {
-                    return Unauthorized("Wrong username or password");
-                }
+                return Unauthorized("Wrong username or password");
+            }
 
-                return Ok(new
-                {
-                    jwtToken = _tokenService.GenerateToken(loginVM.Username)
-                });
-            }
-            catch (Exception ex)
+            return Ok(new
             {
-                return BadRequest(new
-                {
-                    message = ex.Message
-                });
-            }
+                jwtToken = _tokenService.GenerateToken(loginVM.Username)
+            });
         }
     }
 }
