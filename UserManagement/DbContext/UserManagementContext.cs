@@ -29,7 +29,7 @@ public partial class UserManagementDbContext : Microsoft.EntityFrameworkCore.DbC
             entity.HasIndex(e => e.Username, "UQ_User_Username").IsUnique();
 
             entity.Property(e => e.CreatedTimeStamp).HasColumnType("datetime");
-            entity.Property(e => e.Password)
+            entity.Property(e => e.PasswordHash)
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.UpdatedTimeStamp).HasColumnType("datetime");

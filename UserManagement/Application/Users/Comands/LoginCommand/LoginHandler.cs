@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using UserManagement.Common;
 using UserManagement.DbContext;
 using UserManagement.DbContext.Models;
 using UserManagement.Services;
@@ -20,9 +21,9 @@ namespace UserManagement.Application.Users.Comands.LoginCommand
         public async Task<LoginResult> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             LoginResult result = new LoginResult();
-            User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username == request.Username && x.Password == request.Password);
+            User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username == request.Username);
 
-            if (user != null)
+            if (user != null && PasswordHasher.VerifyPassword(request.Password, user.PasswordHash))
             {
                 result.IsLoginSuccessful = true;
                 result.JwtToken = _tokenService.GenerateToken(user.Username);
