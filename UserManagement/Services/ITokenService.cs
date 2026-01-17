@@ -1,7 +1,9 @@
-﻿namespace UserManagement.Services
+﻿using UserManagement.DbContext.Models;
+
+namespace UserManagement.Services
 {
     public interface ITokenService
     {
-        string GenerateToken(string username);
+        string GenerateToken(User user);
     }
 }

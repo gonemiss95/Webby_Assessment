@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using UserManagement.DbContext.Models;
 
 namespace UserManagement.Services
 {
@@ -13,11 +14,12 @@ namespace UserManagement.Services
             _config = config;
         }
 
-        public string GenerateToken(string username)
+        public string GenerateToken(User user)
         {
             List<Claim> claimList = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

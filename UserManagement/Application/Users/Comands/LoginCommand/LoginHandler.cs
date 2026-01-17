@@ -21,12 +21,12 @@ namespace UserManagement.Application.Users.Comands.LoginCommand
         public async Task<LoginResult> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             LoginResult result = new LoginResult();
-            User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username == request.Username);
+            User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username == request.Username, cancellationToken);
 
             if (user != null && PasswordHasher.VerifyPassword(request.Password, user.PasswordHash))
             {
                 result.IsLoginSuccessful = true;
-                result.JwtToken = _tokenService.GenerateToken(user.Username);
+                result.JwtToken = _tokenService.GenerateToken(user);
                 result.Message = "Login successful";
             }
             else
