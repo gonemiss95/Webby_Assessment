@@ -1,0 +1,40 @@
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using UserManagement.DbContext;
+using UserManagement.DbContext.Models;
+using UserManagement.Services;
+
+namespace UserManagement.Application.Users.Comands.LoginCommand
+{
+    public class LoginHandler : IRequestHandler<LoginCommand, LoginResult>
+    {
+        private readonly UserManagementDbContext _dbContext;
+        private readonly ITokenService _tokenService;
+
+        public LoginHandler(UserManagementDbContext dbContext, ITokenService tokenService)
+        {
+            _dbContext = dbContext;
+            _tokenService = tokenService;
+        }
+
+        public async Task<LoginResult> Handle(LoginCommand request, CancellationToken cancellationToken)
+        {
+            LoginResult result = new LoginResult();
+            User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username == request.Username && x.Password == request.Password);
+
+            if (user != null)
+            {
+                result.IsLoginSuccessful = true;
+                result.JwtToken = _tokenService.GenerateToken(user.Username);
+                result.Message = "Login successful";
+            }
+            else
+            {
+                result.IsLoginSuccessful = false;
+                result.Message = "Invalid username or password";
+            }
+
+            return result;
+        }
+    }
+}

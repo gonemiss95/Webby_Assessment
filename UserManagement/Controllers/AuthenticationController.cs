@@ -1,7 +1,7 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UserManagement.Model;
-using UserManagement.Services;
+using UserManagement.Application.Users.Comands.LoginCommand;
 
 namespace UserManagement.Controllers
 {
@@ -9,26 +9,34 @@ namespace UserManagement.Controllers
     [Route("api/auth")]
     public class AuthenticationController : ControllerBase
     {
-        private readonly ITokenService _tokenService;
+        private readonly IMediator _mediator;
 
-        public AuthenticationController(ITokenService tokenService)
+        public AuthenticationController(IMediator mediator)
         {
-            _tokenService = tokenService;
+            _mediator = mediator;
         }
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel loginVM)
+        public async Task<IActionResult> Login([FromBody] LoginCommand loginCmd)
         {
-            if (loginVM.Username != "admin" && loginVM.Password != "admin123")
-            {
-                return Unauthorized("Wrong username or password");
-            }
+            LoginResult result = await _mediator.Send(loginCmd);
 
-            return Ok(new
+            if (!result.IsLoginSuccessful)
             {
-                jwtToken = _tokenService.GenerateToken(loginVM.Username)
-            });
+                return Unauthorized(new
+                {
+                    message = result.Message
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    jwtToken = result.JwtToken,
+                    message = result.Message
+                });
+            }
         }
     }
 }

@@ -1,18 +1,27 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using UserManagement.Behaviours;
+using UserManagement.DbContext;
 using UserManagement.Handlers;
 using UserManagement.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+builder.Services.AddDbContext<UserManagementDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -42,6 +51,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
 IConfigurationSection jwtSettings = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -58,6 +68,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 builder.Services.AddAuthorization();
 
+
 builder.Host.UseSerilog((context, services, configuration) =>
 {
     configuration
@@ -71,9 +82,7 @@ builder.Host.UseSerilog((context, services, configuration) =>
 });
 
 
-#region Add Scoped for Services
 builder.Services.AddScoped<ITokenService, TokenService>();
-#endregion
 
 
 WebApplication app = builder.Build();
