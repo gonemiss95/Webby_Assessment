@@ -27,12 +27,12 @@ namespace UserManagement.Application.Users.Comands.LoginCommand
             {
                 result.IsLoginSuccessful = true;
                 result.JwtToken = _tokenService.GenerateToken(user);
-                result.Message = "Login successful";
+                result.Message = "Login successful.";
             }
             else
             {
                 result.IsLoginSuccessful = false;
-                result.Message = "Invalid username or password";
+                result.Message = "Invalid username or password.";
             }
 
             return result;

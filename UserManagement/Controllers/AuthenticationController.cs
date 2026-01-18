@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserManagement.Application.Users.Comands.LoginCommand;
+using UserManagement.Application.Users.Comands.RegisterCommand;
 
 namespace UserManagement.Controllers
 {
@@ -34,6 +35,28 @@ namespace UserManagement.Controllers
                 return Ok(new
                 {
                     jwtToken = result.JwtToken,
+                    message = result.Message
+                });
+            }
+        }
+
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] RegisterCommand registerCmd)
+        {
+            RegisterResult result = await _mediator.Send(registerCmd);
+
+            if (!result.IsRegisterSuccessful)
+            {
+                return BadRequest(new
+                {
+                    message = result.Message
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
                     message = result.Message
                 });
             }
