@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserManagement.Application;
 using UserManagement.Application.Posts.Comands.CreatePostCommand;
+using UserManagement.Application.Posts.Queries.Dto;
+using UserManagement.Application.Posts.Queries.GetPostListPagination;
 
 namespace UserManagement.Controllers
 {
     [ApiController]
-    [Route("api/tag")]
+    [Route("api/post")]
     public class PostController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -15,6 +17,20 @@ namespace UserManagement.Controllers
         public PostController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        [HttpGet("getpostlist")]
+        public async Task<IActionResult> GetPostList([FromQuery] int pageNo, [FromQuery] int pageSize)
+        {
+            int userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            PageResult<PostDto> result = await _mediator.Send(new GetPostListPaginationQuery()
+            {
+                PageNumber = pageNo,
+                PageSize = pageSize,
+                UserId = userId
+            });
+
+            return Ok(result);
         }
 
         [HttpPost("createpost")]

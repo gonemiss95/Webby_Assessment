@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace UserManagement.Application.Tags.Queries.GetTagListPagination
+namespace UserManagement.Application.Posts.Queries.GetPostListPagination
 {
-    public class GetTagListPaginationValidator : AbstractValidator<GetTagListPaginationQuery>
+    public class GetPostListPaginationValidator : AbstractValidator<GetPostListPaginationQuery>
     {
-        public GetTagListPaginationValidator()
+        public GetPostListPaginationValidator()
         {
             RuleFor(x => x.PageNumber)
                 .Cascade(CascadeMode.Stop)
