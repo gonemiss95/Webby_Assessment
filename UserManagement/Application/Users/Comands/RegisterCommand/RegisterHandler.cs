@@ -6,7 +6,7 @@ using UserManagement.DbContext.Models;
 
 namespace UserManagement.Application.Users.Comands.RegisterCommand
 {
-    public class RegisterHandler : IRequestHandler<RegisterCommand, RegisterResult>
+    public class RegisterHandler : IRequestHandler<RegisterCommand, CreateResult>
     {
         private readonly UserManagementDbContext _dbContext;
 
@@ -15,14 +15,14 @@ namespace UserManagement.Application.Users.Comands.RegisterCommand
             _dbContext = dbContext;
         }
 
-        public async Task<RegisterResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<CreateResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            RegisterResult result = new RegisterResult();
+            CreateResult result = new CreateResult();
             User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username == request.Username, cancellationToken);
 
             if (user != null)
             {
-                result.IsRegisterSuccessful = false;
+                result.IsCreateSuccessful = false;
                 result.Message = "Username already exists.";
             }
             else
@@ -51,7 +51,7 @@ namespace UserManagement.Application.Users.Comands.RegisterCommand
                 await _dbContext.Users.AddAsync(newUser, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                result.IsRegisterSuccessful = true;
+                result.IsCreateSuccessful = true;
                 result.Message = "Register successfully.";
             }
 

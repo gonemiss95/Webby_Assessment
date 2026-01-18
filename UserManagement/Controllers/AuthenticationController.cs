@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UserManagement.Application;
 using UserManagement.Application.Users.Comands.LoginCommand;
 using UserManagement.Application.Users.Comands.RegisterCommand;
 
@@ -44,9 +45,9 @@ namespace UserManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterCommand registerCmd)
         {
-            RegisterResult result = await _mediator.Send(registerCmd);
+            CreateResult result = await _mediator.Send(registerCmd);
 
-            if (!result.IsRegisterSuccessful)
+            if (!result.IsCreateSuccessful)
             {
                 return BadRequest(new
                 {

@@ -2,7 +2,7 @@
 
 namespace UserManagement.Application.Users.Comands.RegisterCommand
 {
-    public class RegisterCommand : IRequest<RegisterResult>
+    public class RegisterCommand : IRequest<CreateResult>
     {
         public string Username { get; set; }
 
