@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserManagement.Application;
 using UserManagement.Application.Posts.Comands.CreatePostCommand;
+using UserManagement.Application.Posts.Comands.DeletePostCommand;
 using UserManagement.Application.Posts.Comands.UpdatePostCommand;
 using UserManagement.Application.Posts.Queries.Dto;
 using UserManagement.Application.Posts.Queries.GetPostListPagination;
@@ -63,6 +64,32 @@ namespace UserManagement.Controllers
             UpdateResult result = await _mediator.Send(updateCmd);
 
             if (!result.IsUpdateSuccessful)
+            {
+                return BadRequest(new
+                {
+                    message = result.Message
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    message = result.Message
+                });
+            }
+        }
+
+        [HttpDelete("deletepost/{postId:int}")]
+        public async Task<IActionResult> DeletePost([FromRoute] int postId)
+        {
+            int userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            DeleteResult result = await _mediator.Send(new DeletePostCommand()
+            {
+                PostId = postId,
+                UserId = userId
+            });
+
+            if (!result.IsDeleteSuccessful)
             {
                 return BadRequest(new
                 {
