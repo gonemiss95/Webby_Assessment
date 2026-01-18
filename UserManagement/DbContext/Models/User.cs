@@ -15,5 +15,7 @@ public partial class User
 
     public DateTime UpdatedTimeStamp { get; set; }
 
+    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+
     public virtual ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
 }

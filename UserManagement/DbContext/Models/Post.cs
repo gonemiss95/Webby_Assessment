@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 namespace UserManagement.DbContext.Models;
 
-public partial class Tag
+public partial class Post
 {
-    public int TagId { get; set; }
+    public int PostId { get; set; }
 
-    public string TagName { get; set; } = null!;
+    public int UserId { get; set; }
 
-    public string TagDescription { get; set; } = null!;
+    public string PostAbbr { get; set; } = null!;
 
-    public int CreatedUserId { get; set; }
+    public string PostTitle { get; set; } = null!;
 
     public DateTime CreatedTimeStamp { get; set; }
-
-    public int UpdatedUserId { get; set; }
 
     public DateTime UpdatedTimeStamp { get; set; }
 
     public virtual ICollection<PostTag> PostTags { get; set; } = new List<PostTag>();
+
+    public virtual User User { get; set; } = null!;
 }
