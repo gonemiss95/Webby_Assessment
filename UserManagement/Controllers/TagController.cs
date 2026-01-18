@@ -1,7 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using UserManagement.Application;
 using UserManagement.Application.Tags.Comands.CreateTagCommand;
+using UserManagement.Application.Tags.Queries.Dto;
+using UserManagement.Application.Tags.Queries.GetTagListPagination;
 
 namespace UserManagement.Controllers
 {
@@ -14,6 +17,18 @@ namespace UserManagement.Controllers
         public TagController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        [HttpGet("gettaglist")]
+        public async Task<IActionResult> GetTagList([FromQuery] int pageNo, [FromQuery] int pageSize)
+        {
+            PageResult<TagDto> result = await _mediator.Send(new GetTagListPaginationQuery()
+            {
+                PageNumber = pageNo,
+                PageSize = pageSize
+            });
+
+            return Ok(result);
         }
 
         [HttpPost("createtag")]
