@@ -47,7 +47,7 @@ public partial class UserManagementDbContext : Microsoft.EntityFrameworkCore.DbC
                 .IsUnicode(false);
             entity.Property(e => e.CreatedTimeStamp).HasColumnType("datetime");
             entity.Property(e => e.Email)
-                .HasMaxLength(50)
+                .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.FullName)
                 .HasMaxLength(200)

@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using UserManagement.Application.Users.Comands.UpdateUserProfileCommand;
 using UserManagement.Application.Users.Queries.Dto;
 using UserManagement.Application.Users.Queries.GetUserProfileByUserId;
 
@@ -25,10 +26,37 @@ namespace UserManagement.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return NotFound(new
+                {
+                    message = "User profile not found."
+                });
             }
+            else
+            {
+                return Ok(result);
+            }
+        }
 
-            return Ok(result);
+        [HttpPut("updateuserprofile")]
+        public async Task<IActionResult> UpdateUserProfile([FromBody] UpdateUserProfileCommand updateCmd)
+        {
+            updateCmd.UserId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            bool result = await _mediator.Send(updateCmd);
+
+            if (!result)
+            {
+                return NotFound(new
+                {
+                    message = "User profile not found."
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    message = "User profile successfully updated."
+                });
+            }
         }
     }
 }
