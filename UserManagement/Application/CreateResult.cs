@@ -1,6 +1,6 @@
-﻿namespace UserManagement.Application.Tags.Comands.CreateTagCommand
+﻿namespace UserManagement.Application
 {
-    public class CreateTagResult
+    public class CreateResult
     {
         public bool IsCreateSuccessful { get; set; }
 

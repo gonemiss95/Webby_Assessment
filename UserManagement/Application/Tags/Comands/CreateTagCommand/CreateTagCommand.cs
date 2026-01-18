@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace UserManagement.Application.Tags.Comands.CreateTagCommand
 {
-    public class CreateTagCommand : IRequest<CreateTagResult>
+    public class CreateTagCommand : IRequest<CreateResult>
     {
         public string TagName { get; set; }
 

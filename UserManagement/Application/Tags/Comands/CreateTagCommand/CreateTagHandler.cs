@@ -5,7 +5,7 @@ using UserManagement.DbContext.Models;
 
 namespace UserManagement.Application.Tags.Comands.CreateTagCommand
 {
-    public class CreateTagHandler : IRequestHandler<CreateTagCommand, CreateTagResult>
+    public class CreateTagHandler : IRequestHandler<CreateTagCommand, CreateResult>
     {
         private readonly UserManagementDbContext _dbContext;
 
@@ -14,9 +14,9 @@ namespace UserManagement.Application.Tags.Comands.CreateTagCommand
             _dbContext = dbContext;
         }
 
-        public async Task<CreateTagResult> Handle(CreateTagCommand request, CancellationToken cancellationToken)
+        public async Task<CreateResult> Handle(CreateTagCommand request, CancellationToken cancellationToken)
         {
-            CreateTagResult result = new CreateTagResult();
+            CreateResult result = new CreateResult();
             Tag tag = await _dbContext.Tags.FirstOrDefaultAsync(x => x.TagName == request.TagName, cancellationToken);
 
             if (tag != null)

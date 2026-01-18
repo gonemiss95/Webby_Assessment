@@ -5,7 +5,7 @@ using UserManagement.DbContext.Models;
 
 namespace UserManagement.Application.Posts.Comands.CreatePostCommand
 {
-    public class CreatePostHandler : IRequestHandler<CreatePostCommand, CreatePostResult>
+    public class CreatePostHandler : IRequestHandler<CreatePostCommand, CreateResult>
     {
         private readonly UserManagementDbContext _dbContext;
 
@@ -14,9 +14,9 @@ namespace UserManagement.Application.Posts.Comands.CreatePostCommand
             _dbContext = dbContext;
         }
 
-        public async Task<CreatePostResult> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+        public async Task<CreateResult> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
-            CreatePostResult result = new CreatePostResult();
+            CreateResult result = new CreateResult();
             Post post = await _dbContext.Posts.FirstOrDefaultAsync(x => x.PostAbbr == request.PostAbbr && x.UserId == request.UserId, cancellationToken);
 
             if (post != null)

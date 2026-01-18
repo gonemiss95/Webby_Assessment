@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using UserManagement.Application;
 using UserManagement.Application.Posts.Comands.CreatePostCommand;
 
 namespace UserManagement.Controllers
@@ -20,7 +21,7 @@ namespace UserManagement.Controllers
         public async Task<IActionResult> CreatePost([FromBody] CreatePostCommand createCmd)
         {
             createCmd.UserId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            CreatePostResult result = await _mediator.Send(createCmd);
+            CreateResult result = await _mediator.Send(createCmd);
 
             if (!result.IsCreateSuccessful)
             {

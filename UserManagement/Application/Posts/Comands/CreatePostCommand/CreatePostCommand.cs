@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace UserManagement.Application.Posts.Comands.CreatePostCommand
 {
-    public class CreatePostCommand : IRequest<CreatePostResult>
+    public class CreatePostCommand : IRequest<CreateResult>
     {
         public string PostAbbr { get; set; }
 

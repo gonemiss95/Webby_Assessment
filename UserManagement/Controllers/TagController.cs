@@ -35,7 +35,7 @@ namespace UserManagement.Controllers
         public async Task<IActionResult> CreateTag([FromBody] CreateTagCommand createCmd)
         {
             createCmd.UserId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            CreateTagResult result = await _mediator.Send(createCmd);
+            CreateResult result = await _mediator.Send(createCmd);
 
             if (!result.IsCreateSuccessful)
             {
