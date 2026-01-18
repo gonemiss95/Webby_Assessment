@@ -9,6 +9,7 @@ namespace UserManagement.Application.Users.Comands.RegisterCommand
             RuleFor(x => x.Username)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Username cannot be empty.")
+                .Matches("^[a-zA-Z0-9]+$").WithMessage("Username cannot have any spaces or special characters.")
                 .MaximumLength(50).WithMessage("Username cannot exceed 50 character.");
 
             RuleFor(x => x.Password)

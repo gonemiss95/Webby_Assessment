@@ -16,12 +16,30 @@ public partial class UserManagementDbContext : Microsoft.EntityFrameworkCore.DbC
     {
     }
 
+    public virtual DbSet<Tag> Tags { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Tag>(entity =>
+        {
+            entity.ToTable("Tag");
+
+            entity.HasIndex(e => e.TagName, "UQ_Tag_TagName").IsUnique();
+
+            entity.Property(e => e.CreatedTimeStamp).HasColumnType("datetime");
+            entity.Property(e => e.TagDescription)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.TagName)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdatedTimeStamp).HasColumnType("datetime");
+        });
+
         modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable("User");

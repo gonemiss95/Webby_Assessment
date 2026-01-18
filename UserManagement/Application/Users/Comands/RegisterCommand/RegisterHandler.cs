@@ -48,8 +48,8 @@ namespace UserManagement.Application.Users.Comands.RegisterCommand
                         }
                     }
                 };
-                _dbContext.Users.AddAsync(newUser, cancellationToken);
-                _dbContext.SaveChangesAsync(cancellationToken);
+                await _dbContext.Users.AddAsync(newUser, cancellationToken);
+                await _dbContext.SaveChangesAsync(cancellationToken);
 
                 result.IsRegisterSuccessful = true;
                 result.Message = "Register successfully.";
