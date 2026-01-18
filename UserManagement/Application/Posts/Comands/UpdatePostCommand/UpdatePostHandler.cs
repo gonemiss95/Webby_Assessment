@@ -2,16 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using UserManagement.DbContext;
 using UserManagement.DbContext.Models;
+using UserManagement.Services;
 
 namespace UserManagement.Application.Posts.Comands.UpdatePostCommand
 {
     public class UpdatePostHandler : IRequestHandler<UpdatePostCommand, UpdateResult>
     {
         private readonly UserManagementDbContext _dbContext;
+        private readonly IRedisCacheService _cacheService;
 
-        public UpdatePostHandler(UserManagementDbContext dbContext)
+        public UpdatePostHandler(UserManagementDbContext dbContext, IRedisCacheService cacheService)
         {
             _dbContext = dbContext;
+            _cacheService = cacheService;
         }
 
         public async Task<UpdateResult> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
@@ -24,11 +27,18 @@ namespace UserManagement.Application.Posts.Comands.UpdatePostCommand
             if (post != null)
             {
                 List<int> distTagIdList = request.TagIdList.Distinct().OrderBy(x => x).ToList();
+                List<Tag> allTagList = await _cacheService.GetCache<List<Tag>>("tag:all");
 
-                List<int> existingTagIdList = await _dbContext.Tags
+                if (allTagList == null)
+                {
+                    allTagList = await _dbContext.Tags.ToListAsync(cancellationToken);
+                    await _cacheService.SetCache("tag:all", allTagList, TimeSpan.FromMinutes(30));
+                }
+
+                List<int> existingTagIdList = allTagList
                     .Where(x => distTagIdList.Contains(x.TagId))
                     .Select(x => x.TagId)
-                    .ToListAsync(cancellationToken);
+                    .ToList();
 
                 List<int> missingTagIdList = distTagIdList.Except(existingTagIdList).ToList();
 
@@ -59,6 +69,8 @@ namespace UserManagement.Application.Posts.Comands.UpdatePostCommand
                         })
                         .ToList();
                     await _dbContext.SaveChangesAsync(cancellationToken);
+
+                    await _cacheService.RemoveCache("post:*");
 
                     result.IsUpdateSuccessful = true;
                     result.Message = "Post successfully updated.";

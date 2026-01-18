@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using StackExchange.Redis;
 using UserManagement.Behaviours;
 using UserManagement.DbContext;
 using UserManagement.Handlers;
@@ -82,7 +83,10 @@ builder.Host.UseSerilog((context, services, configuration) =>
 });
 
 
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
 
 
 WebApplication app = builder.Build();

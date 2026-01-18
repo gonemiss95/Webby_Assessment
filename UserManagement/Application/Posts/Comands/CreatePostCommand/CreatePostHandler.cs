@@ -2,16 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using UserManagement.DbContext;
 using UserManagement.DbContext.Models;
+using UserManagement.Services;
 
 namespace UserManagement.Application.Posts.Comands.CreatePostCommand
 {
     public class CreatePostHandler : IRequestHandler<CreatePostCommand, CreateResult>
     {
         private readonly UserManagementDbContext _dbContext;
+        private readonly IRedisCacheService _cacheService;
 
-        public CreatePostHandler(UserManagementDbContext dbContext)
+        public CreatePostHandler(UserManagementDbContext dbContext, IRedisCacheService cacheService)
         {
             _dbContext = dbContext;
+            _cacheService = cacheService;
         }
 
         public async Task<CreateResult> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -27,11 +30,18 @@ namespace UserManagement.Application.Posts.Comands.CreatePostCommand
             else
             {
                 List<int> distTagIdList = request.TagIdList.Distinct().OrderBy(x => x).ToList();
+                List<Tag> allTagList = await _cacheService.GetCache<List<Tag>>("tag:all");
 
-                List<int> existingTagIdList = await _dbContext.Tags
+                if (allTagList == null)
+                {
+                    allTagList = await _dbContext.Tags.ToListAsync(cancellationToken);
+                    await _cacheService.SetCache("tag:all", allTagList, TimeSpan.FromMinutes(30));
+                }
+
+                List<int> existingTagIdList = allTagList
                     .Where(x => distTagIdList.Contains(x.TagId))
                     .Select(x => x.TagId)
-                    .ToListAsync(cancellationToken);
+                    .ToList();
 
                 List<int> missingTagIdList = distTagIdList.Except(existingTagIdList).ToList();
 
@@ -62,6 +72,8 @@ namespace UserManagement.Application.Posts.Comands.CreatePostCommand
                     };
                     await _dbContext.Posts.AddAsync(newPost, cancellationToken);
                     await _dbContext.SaveChangesAsync(cancellationToken);
+
+                    await _cacheService.RemoveCache("post:*");
 
                     result.IsCreateSuccessful = true;
                     result.Message = "New post successfully created.";

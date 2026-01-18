@@ -2,16 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using UserManagement.DbContext;
 using UserManagement.DbContext.Models;
+using UserManagement.Services;
 
 namespace UserManagement.Application.Tags.Comands.CreateTagCommand
 {
     public class CreateTagHandler : IRequestHandler<CreateTagCommand, CreateResult>
     {
         private readonly UserManagementDbContext _dbContext;
+        private readonly IRedisCacheService _cacheService;
 
-        public CreateTagHandler(UserManagementDbContext dbContext)
+        public CreateTagHandler(UserManagementDbContext dbContext, IRedisCacheService cacheService)
         {
             _dbContext = dbContext;
+            _cacheService = cacheService;
         }
 
         public async Task<CreateResult> Handle(CreateTagCommand request, CancellationToken cancellationToken)
@@ -39,6 +42,8 @@ namespace UserManagement.Application.Tags.Comands.CreateTagCommand
                 };
                 await _dbContext.Tags.AddAsync(newTag, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
+
+                await _cacheService.RemoveCache("tag:*");
 
                 result.IsCreateSuccessful = true;
                 result.Message = "New tag successfully created.";

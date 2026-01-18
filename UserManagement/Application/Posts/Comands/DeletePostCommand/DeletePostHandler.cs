@@ -2,16 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using UserManagement.DbContext;
 using UserManagement.DbContext.Models;
+using UserManagement.Services;
 
 namespace UserManagement.Application.Posts.Comands.DeletePostCommand
 {
     public class DeletePostHandler : IRequestHandler<DeletePostCommand, DeleteResult>
     {
         private readonly UserManagementDbContext _dbContext;
+        private readonly IRedisCacheService _cacheService;
 
-        public DeletePostHandler(UserManagementDbContext dbContext)
+        public DeletePostHandler(UserManagementDbContext dbContext, IRedisCacheService cacheService)
         {
             _dbContext = dbContext;
+            _cacheService = cacheService;
         }
 
         public async Task<DeleteResult> Handle(DeletePostCommand request, CancellationToken cancellationToken)
@@ -23,6 +26,8 @@ namespace UserManagement.Application.Posts.Comands.DeletePostCommand
             {
                 _dbContext.Posts.Remove(post);
                 await _dbContext.SaveChangesAsync(cancellationToken);
+
+                await _cacheService.RemoveCache("post:*");
 
                 result.IsDeleteSuccessful = true;
                 result.Message = "Post successfully deleted.";
