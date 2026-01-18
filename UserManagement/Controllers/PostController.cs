@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserManagement.Application;
 using UserManagement.Application.Posts.Comands.CreatePostCommand;
+using UserManagement.Application.Posts.Comands.UpdatePostCommand;
 using UserManagement.Application.Posts.Queries.Dto;
 using UserManagement.Application.Posts.Queries.GetPostListPagination;
 
@@ -40,6 +41,28 @@ namespace UserManagement.Controllers
             CreateResult result = await _mediator.Send(createCmd);
 
             if (!result.IsCreateSuccessful)
+            {
+                return BadRequest(new
+                {
+                    message = result.Message
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    message = result.Message
+                });
+            }
+        }
+
+        [HttpPut("updatepost")]
+        public async Task<IActionResult> UpdatePost([FromBody] UpdatePostCommand updateCmd)
+        {
+            updateCmd.UserId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            UpdateResult result = await _mediator.Send(updateCmd);
+
+            if (!result.IsUpdateSuccessful)
             {
                 return BadRequest(new
                 {

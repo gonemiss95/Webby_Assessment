@@ -51,14 +51,14 @@ namespace UserManagement.Application.Posts.Comands.CreatePostCommand
                         PostTitle = request.PostTitle,
                         CreatedTimeStamp = dateUtcNow,
                         UpdatedTimeStamp = dateUtcNow,
-
-                        PostTags = distTagIdList.Select(x => new PostTag()
-                        {
-                            TagId = x,
-                            CreatedTimeStamp = dateUtcNow,
-                            UpdatedTimeStamp = dateUtcNow
-                        })
-                        .ToList()
+                        PostTags = distTagIdList
+                            .Select(x => new PostTag()
+                            {
+                                TagId = x,
+                                CreatedTimeStamp = dateUtcNow,
+                                UpdatedTimeStamp = dateUtcNow
+                            })
+                            .ToList()
                     };
                     await _dbContext.Posts.AddAsync(newPost, cancellationToken);
                     await _dbContext.SaveChangesAsync(cancellationToken);
