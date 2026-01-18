@@ -23,7 +23,7 @@ namespace UserManagement.Application.Users.Comands.RegisterCommand
             if (user != null)
             {
                 result.IsRegisterSuccessful = false;
-                result.Message = "Username is already occupied.";
+                result.Message = "Username already exists.";
             }
             else
             {

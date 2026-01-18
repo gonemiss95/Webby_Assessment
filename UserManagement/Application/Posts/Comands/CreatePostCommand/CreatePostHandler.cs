@@ -64,7 +64,7 @@ namespace UserManagement.Application.Posts.Comands.CreatePostCommand
                     await _dbContext.SaveChangesAsync(cancellationToken);
 
                     result.IsCreateSuccessful = true;
-                    result.Message = "Post created successfully.";
+                    result.Message = "New post successfully created.";
                 }
             }
 

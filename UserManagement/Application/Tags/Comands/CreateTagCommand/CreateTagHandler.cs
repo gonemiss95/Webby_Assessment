@@ -41,7 +41,7 @@ namespace UserManagement.Application.Tags.Comands.CreateTagCommand
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 result.IsCreateSuccessful = true;
-                result.Message = "Tag created successfully.";
+                result.Message = "New tag successfully created.";
             }
 
             return result;

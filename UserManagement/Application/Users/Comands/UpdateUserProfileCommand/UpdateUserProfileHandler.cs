@@ -5,7 +5,7 @@ using UserManagement.DbContext.Models;
 
 namespace UserManagement.Application.Users.Comands.UpdateUserProfileCommand
 {
-    public class UpdateUserProfileHandler : IRequestHandler<UpdateUserProfileCommand, bool>
+    public class UpdateUserProfileHandler : IRequestHandler<UpdateUserProfileCommand, UpdateResult>
     {
         private readonly UserManagementDbContext _dbContext;
 
@@ -14,8 +14,9 @@ namespace UserManagement.Application.Users.Comands.UpdateUserProfileCommand
             _dbContext = dbContext;
         }
 
-        public async Task<bool> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
+        public async Task<UpdateResult> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
         {
+            UpdateResult result = new UpdateResult();
             UserProfile profile = await _dbContext.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId, cancellationToken);
 
             if (profile != null)
@@ -24,14 +25,18 @@ namespace UserManagement.Application.Users.Comands.UpdateUserProfileCommand
                 profile.ContactNo = request.ContactNo;
                 profile.Email = request.Email;
                 profile.UpdatedTimeStamp = DateTime.UtcNow;
-
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                return true;
+
+                result.IsUpdateSuccessful = true;
+                result.Message = "User profile successfully updated.";
             }
             else
             {
-                return false;
+                result.IsUpdateSuccessful = false;
+                result.Message = "User profile not found.";
             }
+
+            return result;
         }
     }
 }

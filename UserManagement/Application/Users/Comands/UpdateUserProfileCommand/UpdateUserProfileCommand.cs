@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace UserManagement.Application.Users.Comands.UpdateUserProfileCommand
 {
-    public class UpdateUserProfileCommand : IRequest<bool>
+    public class UpdateUserProfileCommand : IRequest<UpdateResult>
     {
         [JsonIgnore]
         public int UserId { get; set; }
